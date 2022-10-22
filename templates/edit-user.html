@@ -3,8 +3,8 @@
 {% block title %}Blogly - Edit User{% endblock %}
 
 {% block content %}
-<h2>Edit a User</h2>
-<form method="post" action="/user/{{user.id}}/edit">
+<h2>Edit User {{user.last_name}}</h2>
+<form method="post" action="/users/{{user.id}}/edit">
     <div class="form-group">
         <label for="first-name">First Name</label>
         <input type="text" class="form-control" id="first-name" name="first-name" value="{{user.first_name}}">
@@ -17,7 +17,7 @@
         <label for="image-url">Image URL</label>
         <input type="text" class="form-control" id="image-url" name="image-url" value="{{user.image_url}}">
     </div>
-    <a href="/user/{{user.id}}" class="btn btn-outline-info">Cancel</a>
+    <a href="/users/{{user.id}}" class="btn btn-outline-info">Cancel</a>
     <button type="submit" class="btn btn-success">Save</button>
 </form>
 {% endblock %}

@@ -3,11 +3,24 @@
 {% block title %}Blogly - User Details{% endblock %}
 
 {% block content %}
-<img class="user-img" src="{{user.image_url}}">
-<h2>{{user.first_name}} {{user.last_name}}</h2>
-<form method="post" action="/user/{{user.id}}/delete">
-    <a href="/user/{{user.id}}/edit" class="btn btn-primary">Edit</a>
-    <button type="submit" class="btn btn-danger">Delete</button>
-</form>
-<a href="/users" class="btn btn-outline-info">Back</a>
+<div class="row">
+  <div class="col-auto">
+    <img class="user-img" src="{{user.image_url}}">
+  </div>
+  <div class="col">
+    <h2>{{user.first_name}} {{user.last_name}}</h2>
+    <form method="post" action="/users/{{user.id}}/delete">
+      <a href="/users/{{user.id}}/edit" class="btn btn-primary">Edit</a>
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+    <h3>Posts</h3>
+    <ul>
+      {% for post in user.posts %}
+      <li><a href="/posts/{{post.id}}">{{post.title}}</a></li>
+      {% endfor %}
+    </ul>
+    <a href="/users/{{user.id}}/posts/new" class="btn btn-lg btn-primary">Add Post</a>
+    <a href="/users" class="btn btn-outline-info">Back</a>
+  </div>
+</div>
 {% endblock %}

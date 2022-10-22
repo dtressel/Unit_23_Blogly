@@ -3,9 +3,9 @@
 }
 
 .user-img {
-  width: clamp(150px, 12vw, 300px);
-  float: left;
-  margin: 0 10px 10px 0;
+  width: clamp(200px, 20vw, 300px);
+  /* float: left;
+  margin: 0 10px 10px 0; */
 }
 
 .btn {
