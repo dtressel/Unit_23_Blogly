@@ -12,7 +12,19 @@
     <div class="form-group">
         <label for="content">Content</label>
         <textarea type="text" class="form-control" id="content" name="content">{{post.content}}</textarea>
-    </div>   
+    </div>
+    <ul class="list-group">
+      {% for tag in all_tags %}
+      <li class="list-item-checkbox">
+        {% if tag.name in checked_tags %}
+        <input class="form-check-input me-1" type="checkbox" name="{{tag.name}}" id="{{tag.name}}" checked>
+        {% else %}
+        <input class="form-check-input me-1" type="checkbox" name="{{tag.name}}" id="{{tag.name}}">
+        {% endif %}
+        <label for="{{tag.name}}">{{tag.name}}</label>
+      </li>
+      {% endfor %}
+    </ul>
     <a href="/posts/{{post.id}}" class="btn btn-outline-info">Cancel</a>
     <button type="submit" class="btn btn-success">Save</button>
 </form>

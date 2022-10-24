@@ -2,7 +2,7 @@
 
 from flask import Flask, redirect, render_template, request
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Post
+from models import db, connect_db, User, Post, Tag
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly'
@@ -18,8 +18,9 @@ connect_db(app)
 
 @app.route('/')
 def show_home():
-    """Redirects to /users"""
-    return redirect('/users')
+    """Shows Home Page"""
+
+    return render_template('home.html')
 
 @app.route('/users')
 def show_users():
@@ -84,15 +85,20 @@ def show_new_post_form(user_id):
     """Displays the form to create a new post"""
 
     selected_user = User.query.get(user_id)
-    return render_template('new-post.html', user=selected_user)
+    tags = Tag.query.all()
+    return render_template('new-post.html', user=selected_user, tags=tags)
 
 @app.route('/users/<int:user_id>/posts/new', methods=['POST'])
 def create_new_post(user_id):
     """Handles a new post submission"""
 
+    tags = []
+    for tag in Tag.query.all():
+        if request.form.get(tag.name):
+            tags.append(tag)
     title = request.form['title']
     content = request.form['content']
-    new_post = Post(title=title, content=content, user_id=user_id)
+    new_post = Post(title=title, content=content, user_id=user_id, tags=tags)
     db.session.add(new_post)
     db.session.commit()
     return redirect(f'/users/{user_id}')
@@ -112,16 +118,25 @@ def post_edit_form(post_id):
 
     selected_post = Post.query.get(post_id)
     author = User.query.get(selected_post.user_id)
+    checked_tags = []
+    for tag in selected_post.tags:
+        checked_tags.append(tag.name)
+    all_tags = Tag.query.all()
 
-    return render_template('edit-post.html', post=selected_post, author=author)
+    return render_template('edit-post.html', post=selected_post, author=author, checked_tags=checked_tags, all_tags=all_tags)
 
 @app.route('/posts/<int:post_id>/edit', methods=['POST'])
 def update_post(post_id):
     """Handles post edit submission"""
 
+    tags = []
+    for tag in Tag.query.all():
+        if request.form.get(tag.name):
+            tags.append(tag)
     edited_post = Post.query.get(post_id)
     edited_post.title = request.form['title']
     edited_post.content = request.form['content']
+    edited_post.tags = tags
     db.session.add(edited_post)
     db.session.commit()
 
@@ -137,3 +152,58 @@ def delete_post(post_id):
     db.session.commit()
 
     return redirect(f'/users/{author.id}')
+
+@app.route('/tags')
+def tags_list():
+    """Shows a list of tags"""
+
+    tags= Tag.query.all()
+
+    return render_template('tags-list.html', tags=tags)
+
+@app.route('/tags/<int:tag_id>')
+def tag_details(tag_id):
+    """Shows tag details and a list of posts associated with that tag"""
+
+    selected_tag = Tag.query.get(tag_id)
+    tag_posts = selected_tag.posts
+
+    return render_template(f'posts-by-tag.html', tag=selected_tag, posts=tag_posts)
+
+@app.route('/tags/new')
+def new_tag_form():
+    """Displays the page with the form to create a new tag"""
+
+    return render_template('new-tag.html')
+
+@app.route('/tags/new', methods=['POST'])
+def new_tag_form_submit():
+    name = request.form['name']
+    new_tag = Tag(name=name)
+    db.session.add(new_tag)
+    db.session.commit()
+
+    return redirect('/tags')
+
+@app.route('/tags/<int:tag_id>/edit')
+def edit_tag_form(tag_id):
+    selected_tag = Tag.query.get(tag_id)
+
+    return render_template('edit-tag.html', tag=selected_tag)
+
+@app.route('/tags/<int:tag_id>/edit', methods=['POST'])
+def edit_tag_form_submit(tag_id):
+    edited_tag = Tag.query.get(tag_id)
+    edited_tag.name = request.form['name']
+    db.session.add(edited_tag)
+    db.session.commit()
+
+    return redirect(f'/tags/{edited_tag.id}')
+
+@app.route('/tags/<int:tag_id>/delete', methods=['POST'])
+def delete_tag(tag_id):
+    tag_to_delete = Tag.query.get(tag_id)
+    db.session.delete(tag_to_delete)
+    db.session.commit()
+
+    return redirect('/tags')

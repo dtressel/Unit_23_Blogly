@@ -1,4 +1,4 @@
-from models import User, db, Post
+from models import User, db, Post, Tag, PostTag
 from app import app
 
 db.drop_all()
@@ -62,4 +62,34 @@ liu_post2 = Post(title='Have a Good Burrito!',
 posts = [chan_post1, chan_post2, stiller_post1, stiller_post2, wilson_post1, wilson_post2, alba_post1, alba_post2, liu_post1, liu_post2]
 
 db.session.add_all(posts)
+db.session.commit()
+
+# create seed tags
+funny = Tag(name='Funny')
+fun = Tag(name='fun')
+woah = Tag(name='Woah!')                          
+huh = Tag(name='Huh?')
+risky = Tag(name='Risky')
+friends = Tag(name='Friends')
+yummy = Tag(name='Yummy')
+weird = Tag(name='Weird')
+interesting = Tag(name='Interesting')
+
+tags = [funny, fun, woah, huh, risky, friends, yummy, weird, interesting]
+
+db.session.add_all(tags)
+db.session.commit()
+              
+# associate tags with posts                           
+chan_post1.tags.extend([woah, risky])                                                                              
+chan_post2.tags.extend([friends, fun])
+stiller_post1.tags.extend([interesting, yummy])
+stiller_post2.tags.extend([funny, interesting])
+wilson_post1.tags.extend([woah, fun])
+wilson_post2.tags.extend([funny, interesting, weird])
+alba_post1.tags.extend([funny, huh])
+alba_post2.tags.extend([woah, huh, weird])
+liu_post1.tags.extend([risky, interesting])
+liu_post2.tags.extend([funny, friends, yummy])
+
 db.session.commit()

@@ -15,3 +15,12 @@
 input {
   margin-bottom: 12px;
 }
+
+.list-item-checkbox {
+  list-style: none;
+  margin-bottom: -6px;
+}
+
+.badge:link {
+  text-decoration: none;
+}
